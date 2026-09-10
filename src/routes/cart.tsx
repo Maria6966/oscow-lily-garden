@@ -32,7 +32,7 @@ function CartPage() {
     phone: "",
     address: "",
     delivery_date: "",
-    delivery_slot: slots[1],
+    delivery_slot: "13:00–17:00",
     comment: "",
   });
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");

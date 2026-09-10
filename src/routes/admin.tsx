@@ -43,7 +43,7 @@ const STATUSES: Record<string, string> = {
 const emptyDraft = {
   slug: "",
   name: "",
-  kind: KINDS[0],
+  kind: "Ориентальная",
   color: "",
   description: "",
   price: 1000,
