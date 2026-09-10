@@ -25,8 +25,6 @@ const tariffs = [
   { price: "Бесплатно", area: "При заказе от 5 000 ₽", note: "Любой адрес в пределах зоны" },
 ];
 
-export default function noop() {}
-
 function DeliveryPage() {
   return (
     <section className="mx-auto max-w-[1360px] px-6 py-14">
