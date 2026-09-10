@@ -7,21 +7,23 @@ import { formatPrice, productImage } from "@/lib/shop";
 
 export const Route = createFileRoute("/product/$slug")({
   loader: ({ context }) => context.queryClient.ensureQueryData(productsQuery),
-  head: ({ params }) => ({
-    meta: [
-      { title: `Лилия ${params.slug} — купить букет в Москве · Лилия` },
-      {
-        name: "description",
-        content:
-          "Свежесрезанный букет лилий из мастерской «Лилия»: состав, высота стебля, стойкость и доставка по Москве.",
-      },
-      { property: "og:title", content: "Букет лилий · Лилия, Москва" },
-      {
-        property: "og:description",
-        content: "Состав букета, высота стебля и стойкость. Доставка по Москве за 24 часа.",
-      },
-    ],
-  }),
+  head: ({ params, loaderData }) => {
+    const product = loaderData?.find((p) => p.slug === params.slug);
+    const title = product
+      ? `${product.name} — букет лилий с доставкой по Москве · Лилия`
+      : "Букет лилий · Лилия, Москва";
+    const description = product
+      ? `${product.description} ${product.stems} стеблей, ${product.height_cm} см, ${formatPrice(product.price)}. Доставка по Москве за 24 часа.`
+      : "Состав букета, высота стебля и стойкость. Доставка по Москве за 24 часа.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description.slice(0, 300) },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description.slice(0, 300) },
+      ],
+    };
+  },
   component: ProductPage,
   notFoundComponent: () => (
     <div className="mx-auto max-w-[1360px] px-6 py-20 text-center">
