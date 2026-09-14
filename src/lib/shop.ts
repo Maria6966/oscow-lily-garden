@@ -34,14 +34,21 @@ const bundled: Record<string, string> = {
   "garden-milk": gardenMilk,
 };
 
-/** Картинка товара: встроенная фотография ателье либо ссылка, добавленная в админке. */
+/** Публичный адрес фотографии, загруженной в хранилище магазина. */
+export function storageImageUrl(path: string) {
+  return `/api/public/product-image/${path.split("/").map(encodeURIComponent).join("/")}`;
+}
+
+/** Картинка товара: загруженное фото, встроенная фотография ателье либо внешняя ссылка. */
 export function productImage(product: { image_url?: string | null; slug?: string }) {
   const key = product.image_url ?? "";
+  if (key.startsWith("storage:")) return storageImageUrl(key.slice("storage:".length));
   if (bundled[key]) return bundled[key];
   if (product.slug && bundled[product.slug]) return bundled[product.slug];
   if (key.startsWith("http")) return key;
   return atelier;
 }
+
 
 export const KINDS = ["Ориентальная", "Азиатская", "Смесовая", "Композиция"];
 
