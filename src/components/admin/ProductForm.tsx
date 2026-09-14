@@ -23,7 +23,8 @@ export function slugify(value: string) {
 }
 
 export type Draft = {
-  id?: string;
+  id?: string | undefined;
+
   slug: string;
   name: string;
   kind: string;
