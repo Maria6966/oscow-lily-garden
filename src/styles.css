@@ -87,6 +87,36 @@
   --ring: var(--sagedeep);
 }
 
+.dark {
+  --cream: oklch(0.22 0.018 135);
+  --paper: oklch(0.27 0.022 132);
+  --ink: oklch(0.92 0.025 92);
+  --inksoft: oklch(0.75 0.027 112);
+  --petal: oklch(0.43 0.055 4);
+  --petaldeep: oklch(0.74 0.085 5);
+  --sage: oklch(0.39 0.04 127);
+  --sagedeep: oklch(0.72 0.06 130);
+  --butter: oklch(0.74 0.08 84);
+
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card: oklch(0.255 0.019 135);
+  --card-foreground: var(--ink);
+  --popover: oklch(0.255 0.019 135);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--cream);
+  --secondary: var(--paper);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper);
+  --muted-foreground: var(--inksoft);
+  --accent: var(--petal);
+  --accent-foreground: var(--ink);
+  --border: oklch(0.92 0.025 92 / 14%);
+  --input: oklch(0.92 0.025 92 / 20%);
+  --ring: var(--sagedeep);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
