@@ -223,7 +223,7 @@ export function ChatWidget() {
             </form>
           ) : (
             <>
-              <Conversation className="min-h-[280px] flex-1">
+              <Conversation className="min-h-[280px] flex-1 overflow-y-auto">
                 <ConversationContent className="gap-3 px-4 py-4">
                   {messages
                     .filter((message) => message.role !== "system")
