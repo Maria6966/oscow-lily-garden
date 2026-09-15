@@ -104,6 +104,7 @@ export type Database = {
           delivery_slot: string
           id: string
           items: Json
+          notified_at: string | null
           phone: string
           source: string
           status: string
@@ -120,6 +121,7 @@ export type Database = {
           delivery_slot?: string
           id?: string
           items?: Json
+          notified_at?: string | null
           phone: string
           source?: string
           status?: string
@@ -136,6 +138,7 @@ export type Database = {
           delivery_slot?: string
           id?: string
           items?: Json
+          notified_at?: string | null
           phone?: string
           source?: string
           status?: string
@@ -195,6 +198,24 @@ export type Database = {
           stems?: number
           updated_at?: string
           vase_days?: number
+        }
+        Relationships: []
+      }
+      telegram_subscribers: {
+        Row: {
+          chat_id: number
+          created_at: string
+          title: string
+        }
+        Insert: {
+          chat_id: number
+          created_at?: string
+          title?: string
+        }
+        Update: {
+          chat_id?: number
+          created_at?: string
+          title?: string
         }
         Relationships: []
       }
