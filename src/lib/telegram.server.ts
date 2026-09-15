@@ -126,10 +126,32 @@ export async function notifyOrder(orderId: string): Promise<{ sent: number }> {
     }
   }
 
-  await supabaseAdmin
-    .from("orders")
-    .update({ notified_at: new Date().toISOString() })
-    .eq("id", orderId);
+  // Отметку ставим только если уведомление действительно ушло —
+  // иначе заявка отправится позже, когда появится подписчик.
+  if (sent > 0) {
+    await supabaseAdmin
+      .from("orders")
+      .update({ notified_at: new Date().toISOString() })
+      .eq("id", orderId);
+  }
 
+  return { sent };
+}
+
+/** Отправить накопившиеся неотправленные заявки (например, сразу после /start). */
+export async function notifyPendingOrders(limit = 5): Promise<{ sent: number }> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("orders")
+    .select("id")
+    .is("notified_at", null)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  let sent = 0;
+  for (const row of data ?? []) {
+    const result = await notifyOrder((row as { id: string }).id);
+    sent += result.sent;
+  }
   return { sent };
 }

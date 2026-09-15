@@ -4,7 +4,9 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { webhookSecret, safeEqual, telegramCall } = await import("@/lib/telegram.server");
+        const { webhookSecret, safeEqual, telegramCall, notifyPendingOrders } = await import(
+          "@/lib/telegram.server"
+        );
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         const provided = request.headers.get("X-Telegram-Bot-Api-Secret-Token") ?? "";
@@ -25,30 +27,43 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         const text = (message?.text ?? "").trim().toLowerCase();
         const title = chat.title ?? chat.first_name ?? chat.username ?? "";
 
-        if (text.startsWith("/start")) {
-          await supabaseAdmin
-            .from("telegram_subscribers")
-            .upsert({ chat_id: chat.id, title }, { onConflict: "chat_id" });
-          await telegramCall("sendMessage", {
-            chat_id: chat.id,
-            text: "Готово! Буду присылать сюда новые заявки с сайта «Лилия». Чтобы отключить уведомления, напишите /stop.",
-          });
-          return Response.json({ ok: true });
-        }
+        // Telegram повторяет доставку при любой ошибке — отвечаем 200 всегда.
+        const say = async (body: string) => {
+          try {
+            await telegramCall("sendMessage", { chat_id: chat.id, text: body });
+          } catch (error) {
+            console.error("[telegram] reply failed", error);
+          }
+        };
 
-        if (text.startsWith("/stop")) {
-          await supabaseAdmin.from("telegram_subscribers").delete().eq("chat_id", chat.id);
-          await telegramCall("sendMessage", {
-            chat_id: chat.id,
-            text: "Уведомления отключены. Напишите /start, чтобы снова получать заявки.",
-          });
-          return Response.json({ ok: true });
-        }
+        try {
+          if (text.startsWith("/start")) {
+            await supabaseAdmin
+              .from("telegram_subscribers")
+              .upsert({ chat_id: chat.id, title }, { onConflict: "chat_id" });
+            await say(
+              "Готово! Буду присылать сюда новые заявки с сайта «Лилия». Чтобы отключить уведомления, напишите /stop.",
+            );
+            try {
+              await notifyPendingOrders();
+            } catch (error) {
+              console.error("[telegram] pending notify failed", error);
+            }
+            return Response.json({ ok: true });
+          }
 
-        await telegramCall("sendMessage", {
-          chat_id: chat.id,
-          text: "Я присылаю новые заявки с сайта «Лилия». /start — включить уведомления, /stop — отключить.",
-        });
+          if (text.startsWith("/stop")) {
+            await supabaseAdmin.from("telegram_subscribers").delete().eq("chat_id", chat.id);
+            await say("Уведомления отключены. Напишите /start, чтобы снова получать заявки.");
+            return Response.json({ ok: true });
+          }
+
+          await say(
+            "Я присылаю новые заявки с сайта «Лилия». /start — включить уведомления, /stop — отключить.",
+          );
+        } catch (error) {
+          console.error("[telegram] webhook error", error);
+        }
         return Response.json({ ok: true });
       },
     },
