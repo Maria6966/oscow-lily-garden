@@ -223,34 +223,32 @@ export function ChatWidget() {
             </form>
           ) : (
             <>
-              <Conversation className="min-h-[280px] flex-1 overflow-y-auto">
-                <ConversationContent className="gap-3 px-4 py-4">
-                  {messages
-                    .filter((message) => message.role !== "system")
-                    .map((message) => (
-                      <Message key={message.id} from={message.role === "user" ? "user" : "assistant"}>
-                        <MessageContent
-                          className={
-                            message.role === "user"
-                              ? "bg-ink text-cream"
-                              : "bg-transparent text-ink"
-                          }
-                        >
-                          {message.role === "operator" && (
-                            <p className="mb-1 text-[10px] uppercase tracking-widest text-sagedeep">
-                              Флорист мастерской
-                            </p>
-                          )}
-                          <MessageResponse>{message.content}</MessageResponse>
-                        </MessageContent>
-                      </Message>
-                    ))}
-                  {sending && (
-                    <Shimmer className="px-1 text-[13px]">Лиля подбирает букет…</Shimmer>
-                  )}
-                </ConversationContent>
-                <ConversationScrollButton />
-              </Conversation>
+              <div
+                ref={scrollRef}
+                role="log"
+                className="flex min-h-[240px] flex-1 flex-col gap-3 overflow-y-auto px-4 py-4"
+              >
+                {messages
+                  .filter((message) => message.role !== "system")
+                  .map((message) => (
+                    <Message key={message.id} from={message.role === "user" ? "user" : "assistant"}>
+                      <MessageContent
+                        className={
+                          message.role === "user" ? "bg-ink text-cream" : "bg-transparent text-ink"
+                        }
+                      >
+                        {message.role === "operator" && (
+                          <p className="mb-1 text-[10px] uppercase tracking-widest text-sagedeep">
+                            Флорист мастерской
+                          </p>
+                        )}
+                        <MessageResponse>{message.content}</MessageResponse>
+                      </MessageContent>
+                    </Message>
+                  ))}
+                {sending && <Shimmer className="px-1 text-[13px]">Лиля подбирает букет…</Shimmer>}
+              </div>
+
 
               {error && <p className="px-4 text-[12px] text-destructive">{error}</p>}
 
