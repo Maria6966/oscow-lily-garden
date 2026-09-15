@@ -240,7 +240,7 @@ export function ChatWidget() {
                     disabled={sending}
                   />
                   <PromptInputFooter className="justify-end">
-                    <PromptInputSubmit status={sending ? "submitted" : undefined} disabled={sending} />
+                    <PromptInputSubmit {...(sending ? { status: "submitted" as const } : {})} disabled={sending} />
                   </PromptInputFooter>
                 </PromptInput>
               </div>
