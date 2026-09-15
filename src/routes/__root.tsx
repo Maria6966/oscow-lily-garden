@@ -16,6 +16,7 @@ import { CartProvider } from "../lib/cart";
 import { SiteHeader } from "../components/SiteHeader";
 import { SiteFooter } from "../components/SiteFooter";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { ChatWidget } from "../components/chat/ChatWidget";
 
 function NotFoundComponent() {
   return (
@@ -141,6 +142,7 @@ function RootComponent() {
           </main>
           {!bare && <SiteFooter />}
            <ThemeToggle />
+          {!bare && <ChatWidget />}
         </div>
       </CartProvider>
     </QueryClientProvider>

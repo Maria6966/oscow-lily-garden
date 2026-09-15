@@ -14,6 +14,85 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          session_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          session_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_sessions: {
+        Row: {
+          consent: boolean
+          created_at: string
+          customer_name: string
+          id: string
+          needs_operator: boolean
+          order_id: string | null
+          phone: string
+          resolved: boolean
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          consent?: boolean
+          created_at?: string
+          customer_name: string
+          id?: string
+          needs_operator?: boolean
+          order_id?: string | null
+          phone: string
+          resolved?: boolean
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          consent?: boolean
+          created_at?: string
+          customer_name?: string
+          id?: string
+          needs_operator?: boolean
+          order_id?: string | null
+          phone?: string
+          resolved?: boolean
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_sessions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           address: string
@@ -26,6 +105,7 @@ export type Database = {
           id: string
           items: Json
           phone: string
+          source: string
           status: string
           total: number
           updated_at: string
@@ -41,6 +121,7 @@ export type Database = {
           id?: string
           items?: Json
           phone: string
+          source?: string
           status?: string
           total?: number
           updated_at?: string
@@ -56,6 +137,7 @@ export type Database = {
           id?: string
           items?: Json
           phone?: string
+          source?: string
           status?: string
           total?: number
           updated_at?: string
