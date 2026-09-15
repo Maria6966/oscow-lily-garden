@@ -265,7 +265,7 @@ export function ChatWidget() {
                     placeholder="Например: букет для мамы до 4 000 ₽"
                   />
                   <PromptInputFooter className="justify-end">
-                    <PromptInputSubmit {...(sending ? { status: "submitted" as const } : {})} disabled={sending} />
+                    <PromptInputSubmit {...(sending ? { status: "submitted" as const } : {})} />
                   </PromptInputFooter>
                 </PromptInput>
               </div>
