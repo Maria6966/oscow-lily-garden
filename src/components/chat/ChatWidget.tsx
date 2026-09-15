@@ -109,7 +109,13 @@ export function ChatWidget() {
         try {
           const result = await send({ data: { token: activeToken, text: draft } });
           queueRef.current.shift();
-          setMessages(result.messages);
+          const pending = queueRef.current.map((draft2, index) => ({
+            id: `local-pending-${index}`,
+            role: "user",
+            content: draft2,
+            created_at: new Date().toISOString(),
+          }));
+          setMessages([...result.messages, ...pending]);
           setError("");
         } catch {
           queueRef.current.shift();
