@@ -96,23 +96,52 @@ export function ChatWidget() {
     }
   };
 
-  const submitMessage = async (text: string) => {
-    if (!token || !text.trim() || sending) return;
-    const draft = text.trim();
+  const queueRef = useRef<string[]>([]);
+  const drainingRef = useRef(false);
+
+  const drainQueue = async (activeToken: string) => {
+    if (drainingRef.current) return;
+    drainingRef.current = true;
     setSending(true);
-    setError("");
-    setMessages((current) => [
-      ...current,
-      { id: `local-${Date.now()}`, role: "user", content: draft, created_at: new Date().toISOString() },
-    ]);
     try {
-      const result = await send({ data: { token, text: draft } });
-      setMessages(result.messages);
-    } catch {
-      setError("Сообщение не отправилось. Попробуйте ещё раз.");
+      while (queueRef.current.length > 0) {
+        const draft = queueRef.current[0]!;
+        try {
+          const result = await send({ data: { token: activeToken, text: draft } });
+          queueRef.current.shift();
+          const pending = queueRef.current.map((draft2, index) => ({
+            id: `local-pending-${index}`,
+            role: "user",
+            content: draft2,
+            created_at: new Date().toISOString(),
+          }));
+          setMessages([...result.messages, ...pending]);
+          setError("");
+        } catch {
+          queueRef.current.shift();
+          setError("Сообщение не отправилось. Напишите ещё раз, пожалуйста.");
+        }
+      }
     } finally {
+      drainingRef.current = false;
       setSending(false);
     }
+  };
+
+  const submitMessage = (text: string) => {
+    const draft = text.trim();
+    if (!token || !draft) return;
+    setMessages((current) => [
+      ...current,
+      {
+        id: `local-${Date.now()}-${current.length}`,
+        role: "user",
+        content: draft,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+    queueRef.current.push(draft);
+    void drainQueue(token);
   };
 
   return (
@@ -227,20 +256,16 @@ export function ChatWidget() {
 
               <div className="border-t border-ink/10 p-3">
                 <PromptInput
-                  onSubmit={(message, event) => {
-                    event.preventDefault();
-                    const text = message.text ?? "";
-                    void submitMessage(text);
-                    event.currentTarget.reset();
+                  onSubmit={(message) => {
+                    submitMessage(message.text ?? "");
                   }}
                 >
                   <PromptInputTextarea
                     ref={textareaRef}
                     placeholder="Например: букет для мамы до 4 000 ₽"
-                    disabled={sending}
                   />
                   <PromptInputFooter className="justify-end">
-                    <PromptInputSubmit {...(sending ? { status: "submitted" as const } : {})} disabled={sending} />
+                    <PromptInputSubmit {...(sending ? { status: "submitted" as const } : {})} />
                   </PromptInputFooter>
                 </PromptInput>
               </div>
