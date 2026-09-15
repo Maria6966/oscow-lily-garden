@@ -5,6 +5,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { OrdersPanel } from "@/components/admin/OrdersPanel";
 import { ProductsPanel } from "@/components/admin/ProductsPanel";
+import { ChatsPanel } from "@/components/admin/ChatsPanel";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -68,7 +69,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 
 function AdminContent({ userId, email }: { userId: string; email: string }) {
   const [claiming, setClaiming] = useState(false);
-  const [tab, setTab] = useState<"orders" | "products">("orders");
+  const [tab, setTab] = useState<"orders" | "products" | "chats">("orders");
 
   const roleQuery = useQuery({
     queryKey: ["admin-role", userId],
@@ -153,6 +154,7 @@ function AdminContent({ userId, email }: { userId: string; email: string }) {
           {([
             ["orders", "Заказы"],
             ["products", "Товары"],
+            ["chats", "Чаты"],
           ] as const).map(([value, label]) => (
             <button
               key={value}
@@ -167,7 +169,7 @@ function AdminContent({ userId, email }: { userId: string; email: string }) {
           ))}
         </div>
 
-        {tab === "orders" ? <OrdersPanel /> : <ProductsPanel />}
+        {tab === "orders" ? <OrdersPanel /> : tab === "products" ? <ProductsPanel /> : <ChatsPanel />}
       </div>
     </section>
   );
