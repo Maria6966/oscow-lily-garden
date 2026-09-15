@@ -98,8 +98,8 @@ function CartPage() {
 
       {items.length === 0 ? (
         <div className="rounded-3xl border border-ink/5 bg-paper/50 p-12 text-center">
-          <p className="font-display text-2xl text-ink">Пока пусто</p>
-          <p className="mt-2 text-inksoft">Выберите сорт в каталоге — соберём букет в день доставки.</p>
+          <p className="font-display text-2xl text-ink">Корзина пуста</p>
+          <p className="mt-2 text-inksoft">Добавьте лилии из каталога — соберём букет в день доставки.</p>
           <Link
             to="/catalog"
             className="mt-6 inline-flex rounded-full bg-ink px-7 py-3 text-sm text-cream hover:bg-inksoft"
