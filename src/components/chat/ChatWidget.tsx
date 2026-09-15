@@ -36,6 +36,7 @@ export function ChatWidget() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({ customer_name: "", phone: "", consent: false });
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const saved = window.sessionStorage.getItem(TOKEN_KEY);
@@ -46,6 +47,13 @@ export function ChatWidget() {
     if (!open || !token) return;
     textareaRef.current?.focus();
   }, [open, token, sending]);
+
+  useEffect(() => {
+    const node = scrollRef.current;
+    if (!node) return;
+    node.scrollTop = node.scrollHeight;
+  }, [messages, sending, open, token]);
+
 
   useEffect(() => {
     if (!token || !open) return;
