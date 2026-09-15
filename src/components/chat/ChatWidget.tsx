@@ -262,8 +262,10 @@ export function ChatWidget() {
                 >
                   <PromptInputTextarea
                     ref={textareaRef}
+                    className="max-h-24 min-h-11"
                     placeholder="Например: букет для мамы до 4 000 ₽"
                   />
+
                   <PromptInputFooter className="justify-end">
                     <PromptInputSubmit {...(sending ? { status: "submitted" as const } : {})} />
                   </PromptInputFooter>
