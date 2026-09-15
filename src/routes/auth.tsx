@@ -35,14 +35,16 @@ function AuthPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setBusy(false);
       if (error) {
-        setMessage("Не удалось войти. Проверьте почту и пароль.");
+        setMessage(
+          "Не удалось войти. Если вы ещё не создавали аккаунт, нажмите «Первый вход — создать аккаунт» ниже.",
+        );
         return;
       }
       navigate({ to: "/admin" });
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: `${window.location.origin}/admin` },
@@ -56,7 +58,11 @@ function AuthPage() {
       );
       return;
     }
-    setMessage("Аккаунт создан. Если потребуется подтверждение, проверьте почту, затем войдите.");
+    if (data.session) {
+      navigate({ to: "/admin" });
+      return;
+    }
+    setMessage("Аккаунт создан. Теперь войдите с этой почтой и паролем.");
     setMode("in");
   };
 
