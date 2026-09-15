@@ -63,9 +63,6 @@ const ShimmerComponent = ({
             "var(--bg), linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground))",
         } as NonNullable<React.ComponentProps<typeof MotionComponent>["style"]>
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      {...{
-      }
       transition={{
         duration,
         ease: "linear",
