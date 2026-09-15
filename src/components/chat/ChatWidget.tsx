@@ -256,17 +256,13 @@ export function ChatWidget() {
 
               <div className="border-t border-ink/10 p-3">
                 <PromptInput
-                  onSubmit={(message, event) => {
-                    event.preventDefault();
-                    const text = message.text ?? "";
-                    void submitMessage(text);
-                    event.currentTarget.reset();
+                  onSubmit={(message) => {
+                    submitMessage(message.text ?? "");
                   }}
                 >
                   <PromptInputTextarea
                     ref={textareaRef}
                     placeholder="Например: букет для мамы до 4 000 ₽"
-                    disabled={sending}
                   />
                   <PromptInputFooter className="justify-end">
                     <PromptInputSubmit {...(sending ? { status: "submitted" as const } : {})} disabled={sending} />
