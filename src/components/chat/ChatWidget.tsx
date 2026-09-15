@@ -4,12 +4,8 @@ import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 
 import chatLily from "@/assets/chat-lily.png";
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
+
 import {
   PromptInput,
   PromptInputFooter,
@@ -40,6 +36,7 @@ export function ChatWidget() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({ customer_name: "", phone: "", consent: false });
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const saved = window.sessionStorage.getItem(TOKEN_KEY);
@@ -50,6 +47,13 @@ export function ChatWidget() {
     if (!open || !token) return;
     textareaRef.current?.focus();
   }, [open, token, sending]);
+
+  useEffect(() => {
+    const node = scrollRef.current;
+    if (!node) return;
+    node.scrollTop = node.scrollHeight;
+  }, [messages, sending, open, token]);
+
 
   useEffect(() => {
     if (!token || !open) return;
@@ -223,34 +227,32 @@ export function ChatWidget() {
             </form>
           ) : (
             <>
-              <Conversation className="min-h-[280px] flex-1">
-                <ConversationContent className="gap-3 px-4 py-4">
-                  {messages
-                    .filter((message) => message.role !== "system")
-                    .map((message) => (
-                      <Message key={message.id} from={message.role === "user" ? "user" : "assistant"}>
-                        <MessageContent
-                          className={
-                            message.role === "user"
-                              ? "bg-ink text-cream"
-                              : "bg-transparent text-ink"
-                          }
-                        >
-                          {message.role === "operator" && (
-                            <p className="mb-1 text-[10px] uppercase tracking-widest text-sagedeep">
-                              Флорист мастерской
-                            </p>
-                          )}
-                          <MessageResponse>{message.content}</MessageResponse>
-                        </MessageContent>
-                      </Message>
-                    ))}
-                  {sending && (
-                    <Shimmer className="px-1 text-[13px]">Лиля подбирает букет…</Shimmer>
-                  )}
-                </ConversationContent>
-                <ConversationScrollButton />
-              </Conversation>
+              <div
+                ref={scrollRef}
+                role="log"
+                className="flex min-h-[240px] flex-1 flex-col gap-3 overflow-y-auto px-4 py-4"
+              >
+                {messages
+                  .filter((message) => message.role !== "system")
+                  .map((message) => (
+                    <Message key={message.id} from={message.role === "user" ? "user" : "assistant"}>
+                      <MessageContent
+                        className={
+                          message.role === "user" ? "bg-ink text-cream" : "bg-transparent text-ink"
+                        }
+                      >
+                        {message.role === "operator" && (
+                          <p className="mb-1 text-[10px] uppercase tracking-widest text-sagedeep">
+                            Флорист мастерской
+                          </p>
+                        )}
+                        <MessageResponse>{message.content}</MessageResponse>
+                      </MessageContent>
+                    </Message>
+                  ))}
+                {sending && <Shimmer className="px-1 text-[13px]">Лиля подбирает букет…</Shimmer>}
+              </div>
+
 
               {error && <p className="px-4 text-[12px] text-destructive">{error}</p>}
 
@@ -262,8 +264,10 @@ export function ChatWidget() {
                 >
                   <PromptInputTextarea
                     ref={textareaRef}
+                    className="max-h-24 min-h-11"
                     placeholder="Например: букет для мамы до 4 000 ₽"
                   />
+
                   <PromptInputFooter className="justify-end">
                     <PromptInputSubmit {...(sending ? { status: "submitted" as const } : {})} />
                   </PromptInputFooter>
