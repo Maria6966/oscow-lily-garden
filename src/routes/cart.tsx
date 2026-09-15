@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
+import { notifyNewOrder } from "@/lib/notify.functions";
 import { formatPrice, FREE_DELIVERY_FROM, productImage } from "@/lib/shop";
 
 export const Route = createFileRoute("/cart")({
@@ -42,7 +43,7 @@ function CartPage() {
     event.preventDefault();
     setState("sending");
     setError("");
-    const { error: insertError } = await supabase.from("orders").insert({
+    const { data: created, error: insertError } = await supabase.from("orders").insert({
       customer_name: form.customer_name,
       phone: form.phone,
       address: form.address,
@@ -58,12 +59,15 @@ function CartPage() {
       })),
       delivery_price: delivery,
       total,
-    });
+    }).select("id").single();
 
     if (insertError) {
       setError("Не удалось отправить заявку. Попробуйте ещё раз или позвоните нам.");
       setState("error");
       return;
+    }
+    if (created?.id) {
+      notifyNewOrder({ data: { orderId: created.id } }).catch(() => {});
     }
     clear();
     setState("done");

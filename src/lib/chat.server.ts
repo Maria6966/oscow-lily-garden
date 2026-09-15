@@ -187,6 +187,12 @@ ${products.map(catalogLine).join("\n")}`,
             .single();
           if (error || !data) return { ok: false, error: "Не удалось сохранить заявку" };
           orderId = data.id;
+          try {
+            const { notifyOrder } = await import("./telegram.server");
+            await notifyOrder(data.id);
+          } catch (notifyError) {
+            console.error("[chat] telegram notify failed", notifyError);
+          }
           await db
             .from("chat_sessions")
             .update({ order_id: data.id })
