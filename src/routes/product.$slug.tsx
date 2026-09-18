@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
 import { productsQuery } from "@/lib/queries";
 import { formatPrice, productImage } from "@/lib/shop";
@@ -132,6 +133,9 @@ function ProductPage() {
                       qty,
                     );
                     setAdded(true);
+                    toast.success(`«${product.name}» добавлен в корзину`, {
+                      description: `${qty} шт. · ${formatPrice(product.price * qty)}`,
+                    });
                   }}
                   className="rounded-full bg-ink px-8 py-3 text-sm text-cream transition-colors hover:bg-inksoft"
                 >

@@ -17,6 +17,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { SiteFooter } from "../components/SiteFooter";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { ChatWidget } from "../components/chat/ChatWidget";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -141,8 +142,9 @@ function RootComponent() {
             <Outlet />
           </main>
           {!bare && <SiteFooter />}
-           <ThemeToggle />
+          <ThemeToggle />
           {!bare && <ChatWidget />}
+          <Toaster position="bottom-right" />
         </div>
       </CartProvider>
     </QueryClientProvider>

@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
 import { formatPrice, productImage, type Product } from "@/lib/shop";
 
@@ -29,15 +30,18 @@ export function ProductCard({ product }: { product: Product }) {
         <button
           type="button"
           aria-label={`Добавить ${product.name} в корзину`}
-          onClick={() =>
+          onClick={() => {
             add({
               slug: product.slug,
               name: product.name,
               kind: product.kind,
               stems: product.stems,
               price: product.price,
-            })
-          }
+            });
+            toast.success(`«${product.name}» добавлен в корзину`, {
+              description: `${product.kind} · ${formatPrice(product.price)}`,
+            });
+          }}
           className="grid size-8 place-items-center rounded-full bg-ink text-lg leading-none text-cream transition-colors group-hover:bg-petaldeep group-hover:text-ink"
         >
           +
